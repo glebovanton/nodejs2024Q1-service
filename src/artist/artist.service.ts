@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DatabaseService } from 'src/database/database.service';
+import { Artist } from 'src/artist/entities/artist.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateDto } from './dto/create-artist.dto';
+import { UpdateDto } from './dto/update-artist.dto';
 
 @Injectable()
 export class ArtistService {
-  create(createArtistDto: CreateArtistDto) {
-    return 'This action adds a new artist';
+  constructor(private dbService: DatabaseService) {}
+
+  public findAll(): Artist[] {
+    return this.dbService.artists;
   }
 
-  findAll() {
-    return `This action returns all artist`;
+  public findOne(id: string): Artist {
+    return this.findArtist(id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} artist`;
+  public create(dto: CreateDto): Artist {
+    const artist: Artist = {
+      id: uuidv4(),
+      ...dto,
+    };
+
+    this.dbService.artists.push(artist);
+
+    return artist;
   }
 
-  update(id: number, updateArtistDto: UpdateArtistDto) {
-    return `This action updates a #${id} artist`;
+  public update(id: string, dto: UpdateDto): Artist {
+    const artist = this.findArtist(id);
+
+    return Object.assign(artist, dto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} artist`;
+  public delete(id: string): void {
+    const artist = this.findArtist(id);
+    const artistIndex = this.dbService.artists.indexOf(artist);
+
+    this.dbService.artists.splice(artistIndex, 1);
+    this.dbService.tracks
+      .filter((track) => track.artistId === artist.id)
+      .forEach((track) => (track.artistId = null));
+    this.dbService.albums
+      .filter((album) => album.artistId === artist.id)
+      .forEach((album) => (album.artistId = null));
+
+    const artistInFavorites = this.dbService.favs.artists.find(
+      (artist) => artist.id === id,
+    );
+
+    if (artistInFavorites) {
+      const artistIndex =
+        this.dbService.favs.artists.indexOf(artistInFavorites);
+      this.dbService.favs.artists.splice(artistIndex, 1);
+    }
+  }
+
+  private findArtist(id: string): Artist {
+    const artist = this.dbService.artists.find((artist) => artist.id === id);
+
+    if (!artist) {
+      throw new NotFoundException('Artist with this ID not found');
+    }
+
+    return artist;
   }
 }
