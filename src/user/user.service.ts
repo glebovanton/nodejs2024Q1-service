@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   ForbiddenException,
   Injectable,
@@ -5,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { User } from './entities/user.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateDto } from './dto/create-user.dto';
 import { UpdateDto } from './dto/update-user.dto';
 
@@ -37,7 +37,7 @@ export class UserService {
 
   public update(id: string, dto: UpdateDto): User {
     const { oldPassword, newPassword } = dto;
-    const user = this.findUser(id);
+    const user: User = this.findUser(id);
     const { password } = user;
 
     if (oldPassword !== password) {
@@ -45,21 +45,23 @@ export class UserService {
     }
 
     user.password = newPassword;
-    user.version += 1;
+    user.version++;
     user.updatedAt = Date.now();
 
     return user;
   }
 
   public delete(id: string): void {
-    const user = this.findUser(id);
-    const userIndex = this.dbService.users.indexOf(user);
+    const user: User = this.findUser(id);
+    const userIndex: number = this.dbService.users.indexOf(user);
 
     this.dbService.users.splice(userIndex, 1);
   }
 
   private findUser(id: string): User {
-    const user = this.dbService.users.find((user) => user.id === id);
+    const user: User | undefined = this.dbService.users.find(
+      (user) => user.id === id,
+    );
 
     if (!user) {
       throw new NotFoundException('User with this ID not found');

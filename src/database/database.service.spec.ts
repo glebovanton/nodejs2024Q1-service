@@ -4,7 +4,7 @@ import { DatabaseService } from './database.service';
 describe('DatabaseService', () => {
   let service: DatabaseService;
 
-  beforeEach(async () => {
+  beforeEach(async (): Promise<void> => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [DatabaseService],
     }).compile();

@@ -25,14 +25,14 @@ export class UserController {
   @Get()
   @Header('Content-Type', 'application/json')
   findAll(): User[] {
-    const users = this.userService.findAll();
+    const users: User[] = this.userService.findAll();
     return users.map((user) => plainToClass(User, user));
   }
 
   @Get(':id')
   @Header('Content-Type', 'application/json')
   findOne(@Param('id', ParseUUIDPipe) id: string): User {
-    const user = this.userService.findOne(id);
+    const user: User = this.userService.findOne(id);
     return plainToClass(User, user);
   }
 
@@ -40,7 +40,7 @@ export class UserController {
   @Post()
   @Header('Content-Type', 'application/json')
   create(@Body() dto: CreateDto): User {
-    const user = this.userService.create(dto);
+    const user: User = this.userService.create(dto);
     return plainToClass(User, user);
   }
 
@@ -48,7 +48,7 @@ export class UserController {
   @Put(':id')
   @Header('Content-Type', 'application/json')
   update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateDto): User {
-    const user = this.userService.update(id, dto);
+    const user: User = this.userService.update(id, dto);
     return plainToClass(User, user);
   }
 

@@ -1,7 +1,7 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Track } from './entities/track.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateDto } from './dto/create-track.dto';
 import { UpdateDto } from './dto/update-track.dto';
 
@@ -29,28 +29,31 @@ export class TrackService {
   }
 
   public update(id: string, dto: UpdateDto): Track {
-    const track = this.findTrack(id);
+    const track: Track = this.findTrack(id);
 
     return Object.assign(track, dto);
   }
 
   public delete(id: string): void {
-    const track = this.findTrack(id);
-    const trackIndex = this.dbService.tracks.indexOf(track);
+    const track: Track = this.findTrack(id);
+    const trackIndex: number = this.dbService.tracks.indexOf(track);
 
     this.dbService.tracks.splice(trackIndex, 1);
-    const trackInFavorites = this.dbService.favs.tracks.find(
-      (track) => track.id === id,
+    const trackInFavorites: Track | undefined = this.dbService.favs.tracks.find(
+      (track: Track): boolean => track.id === id,
     );
 
     if (trackInFavorites) {
-      const trackIndex = this.dbService.favs.tracks.indexOf(trackInFavorites);
+      const trackIndex: number =
+        this.dbService.favs.tracks.indexOf(trackInFavorites);
       this.dbService.favs.tracks.splice(trackIndex, 1);
     }
   }
 
   private findTrack(id: string): Track {
-    const track = this.dbService.tracks.find((track) => track.id === id);
+    const track: Track | undefined = this.dbService.tracks.find(
+      (track) => track.id === id,
+    );
 
     if (!track) {
       throw new NotFoundException('Track with this ID not found');

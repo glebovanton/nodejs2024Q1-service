@@ -1,9 +1,10 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { Album } from 'src/album/entities/album.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateDto } from './dto/create-album.dto';
 import { UpdateDto } from './dto/update-album.dto';
+import { Track } from '../track/entities/track.entity';
 
 @Injectable()
 export class AlbumService {
@@ -29,22 +30,22 @@ export class AlbumService {
   }
 
   public update(id: string, dto: UpdateDto): Album {
-    const track = this.findAlbum(id);
+    const track: Album = this.findAlbum(id);
 
     return Object.assign(track, dto);
   }
 
   public delete(id: string): void {
-    const album = this.findAlbum(id);
-    const albumIndex = this.dbService.albums.indexOf(album);
+    const album: Album = this.findAlbum(id);
+    const albumIndex: number = this.dbService.albums.indexOf(album);
 
     this.dbService.albums.splice(albumIndex, 1);
     this.dbService.tracks
-      .filter((track) => track.albumId === album.id)
-      .forEach((track) => (track.albumId = null));
+      .filter((track: Track): boolean => track.albumId === album.id)
+      .forEach((track: Track): null => (track.albumId = null));
 
-    const albumInFavorites = this.dbService.favs.albums.find(
-      (album) => album.id === id,
+    const albumInFavorites: Album | undefined = this.dbService.favs.albums.find(
+      (album: Album): boolean => album.id === id,
     );
 
     if (albumInFavorites) {
@@ -54,7 +55,9 @@ export class AlbumService {
   }
 
   private findAlbum(id: string): Album {
-    const album = this.dbService.albums.find((album) => album.id === id);
+    const album: Album | undefined = this.dbService.albums.find(
+      (album: Album): boolean => album.id === id,
+    );
 
     if (!album) {
       throw new NotFoundException('Album with this ID not found');

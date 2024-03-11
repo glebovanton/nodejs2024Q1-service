@@ -1,7 +1,7 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Artist } from 'src/artist/entities/artist.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateDto } from './dto/create-artist.dto';
 import { UpdateDto } from './dto/update-artist.dto';
 
@@ -46,19 +46,22 @@ export class ArtistService {
       .filter((album) => album.artistId === artist.id)
       .forEach((album) => (album.artistId = null));
 
-    const artistInFavorites = this.dbService.favs.artists.find(
-      (artist) => artist.id === id,
-    );
+    const artistInFavorites: Artist | undefined =
+      this.dbService.favs.artists.find(
+        (artist: Artist): boolean => artist.id === id,
+      );
 
     if (artistInFavorites) {
-      const artistIndex =
+      const artistIndex: number =
         this.dbService.favs.artists.indexOf(artistInFavorites);
       this.dbService.favs.artists.splice(artistIndex, 1);
     }
   }
 
   private findArtist(id: string): Artist {
-    const artist = this.dbService.artists.find((artist) => artist.id === id);
+    const artist: Artist | undefined = this.dbService.artists.find(
+      (artist: Artist): boolean => artist.id === id,
+    );
 
     if (!artist) {
       throw new NotFoundException('Artist with this ID not found');
