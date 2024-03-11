@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/FreSemin/nodejs2024Q1-service
 ```
 
 ## Installing NPM modules
@@ -18,6 +18,8 @@ npm install
 ```
 
 ## Running application
+
+Create `.env` from `.env.example` in the root folder
 
 ```
 npm start
