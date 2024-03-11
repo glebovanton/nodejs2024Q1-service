@@ -1,26 +1,61 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DatabaseService } from 'src/database/database.service';
+import { Track } from './entities/track.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateDto } from './dto/create-track.dto';
+import { UpdateDto } from './dto/update-track.dto';
 
 @Injectable()
 export class TrackService {
-  create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+  constructor(private dbService: DatabaseService) {}
+
+  public findAll(): Track[] {
+    return this.dbService.tracks;
   }
 
-  findAll() {
-    return `This action returns all track`;
+  public findOne(id: string): Track {
+    return this.findTrack(id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  public create(dto: CreateDto): Track {
+    const track: Track = {
+      id: uuidv4(),
+      ...dto,
+    };
+
+    this.dbService.tracks.push(track);
+
+    return track;
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  public update(id: string, dto: UpdateDto): Track {
+    const track = this.findTrack(id);
+
+    return Object.assign(track, dto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  public delete(id: string): void {
+    const track = this.findTrack(id);
+    const trackIndex = this.dbService.tracks.indexOf(track);
+
+    this.dbService.tracks.splice(trackIndex, 1);
+    const trackInFavorites = this.dbService.favs.tracks.find(
+      (track) => track.id === id,
+    );
+
+    if (trackInFavorites) {
+      const trackIndex = this.dbService.favs.tracks.indexOf(trackInFavorites);
+      this.dbService.favs.tracks.splice(trackIndex, 1);
+    }
+  }
+
+  private findTrack(id: string): Track {
+    const track = this.dbService.tracks.find((track) => track.id === id);
+
+    if (!track) {
+      throw new NotFoundException('Track with this ID not found');
+    }
+
+    return track;
   }
 }
