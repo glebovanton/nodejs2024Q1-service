@@ -10,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 4000;
+  const swaggerPath = 'doc';
 
   app.useGlobalPipes(new ValidationPipe());
 
@@ -17,10 +18,13 @@ async function bootstrap() {
     readFileSync('doc/api.yaml', { encoding: 'utf-8' }),
   );
 
-  SwaggerModule.setup('doc', app, swaggerDoc);
+  SwaggerModule.setup(swaggerPath, app, swaggerDoc);
 
   await app.listen(port).then(() => {
-    console.log(`App listening on the  http://localhost:${port}/`);
+    console.log(`App listening on the http://localhost:${port}/`);
+    console.log(
+      `Swagger works on the http://localhost:${port}/${swaggerPath}/`,
+    );
   });
 }
 bootstrap();
