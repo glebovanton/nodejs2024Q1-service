@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Entity, Fav } from './entities/fav.entity';
 import { FavsService } from './favs.service';
+import { capitalizeFirstLetter } from '../helpers';
 
 @Controller('favs')
 export class FavsController {
@@ -29,9 +30,8 @@ export class FavsController {
   ): string {
     if (this.entities.includes(entity)) {
       this.favsService.add(this.convertToPlural(entity), id);
-      return `${
-        entity[0].toUpperCase + entity.slice(1)
-      } successfully added to favorites`;
+
+      return `${capitalizeFirstLetter(entity)} successfully added to favorites`;
     } else {
       throw new BadRequestException('Invalid entity');
     }
@@ -45,9 +45,10 @@ export class FavsController {
   ): string {
     if (this.entities.includes(entity)) {
       this.favsService.delete(this.convertToPlural(entity), id);
-      return `${
-        entity[0].toUpperCase + entity.slice(1)
-      } successfully deleted from favorites`;
+
+      return `${capitalizeFirstLetter(
+        entity,
+      )} successfully deleted from favorites`;
     } else {
       throw new BadRequestException('Invalid entity');
     }

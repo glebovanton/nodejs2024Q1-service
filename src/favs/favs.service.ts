@@ -8,6 +8,7 @@ import { Album } from 'src/album/entities/album.entity';
 import { Artist } from 'src/artist/entities/artist.entity';
 import { Entity, Fav } from 'src/favs/entities/fav.entity';
 import { Track } from 'src/track/entities/track.entity';
+import { capitalizeFirstLetter } from '../helpers';
 
 @Injectable()
 export class FavsService {
@@ -36,9 +37,7 @@ export class FavsService {
 
     if (!entity) {
       throw new NotFoundException(
-        `${
-          entityName[0].toUpperCase + entityName.slice(1)
-        } with this ID not found`,
+        `${capitalizeFirstLetter(entityName)} with this ID not found`,
       );
     }
 
@@ -54,9 +53,7 @@ export class FavsService {
 
     if (!entity) {
       throw new UnprocessableEntityException(
-        `${
-          entityName[0].toUpperCase + entityName.slice(1)
-        } with this ID doesn't exist`,
+        `${capitalizeFirstLetter(entityName)} with this ID doesn't exist`,
       );
     }
 
