@@ -1,26 +1,70 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { DatabaseService } from 'src/database/database.service';
+import { User } from './entities/user.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateDto } from './dto/create-user.dto';
+import { UpdateDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private dbService: DatabaseService) {}
+
+  public findAll(): User[] {
+    return this.dbService.users;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  public findOne(id: string): User {
+    return this.findUser(id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  public create(dto: CreateDto): User {
+    const user: User = {
+      id: uuidv4(),
+      version: 1,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      ...dto,
+    };
+
+    this.dbService.users.push(user);
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  public update(id: string, dto: UpdateDto): User {
+    const { oldPassword, newPassword } = dto;
+    const user = this.findUser(id);
+    const { password } = user;
+
+    if (oldPassword !== password) {
+      throw new ForbiddenException('Old password is incorrect');
+    }
+
+    user.password = newPassword;
+    user.version += 1;
+    user.updatedAt = Date.now();
+
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  public delete(id: string): void {
+    const user = this.findUser(id);
+    const userIndex = this.dbService.users.indexOf(user);
+
+    this.dbService.users.splice(userIndex, 1);
+  }
+
+  private findUser(id: string): User {
+    const user = this.dbService.users.find((user) => user.id === id);
+
+    if (!user) {
+      throw new NotFoundException('User with this ID not found');
+    }
+
+    return user;
   }
 }
