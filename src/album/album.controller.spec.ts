@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AlbumController } from './album.controller';
-import { AlbumService } from './album.service';
 
 describe('AlbumController', () => {
   let controller: AlbumController;
@@ -8,7 +7,6 @@ describe('AlbumController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AlbumController],
-      providers: [AlbumService],
     }).compile();
 
     controller = module.get<AlbumController>(AlbumController);
