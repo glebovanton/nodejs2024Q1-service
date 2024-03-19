@@ -1,5 +1,5 @@
 # Home Library Service
-
+## Note: if you want to run all test cases successfully, replace to `"test": "jest --testMatch \"<rootDir>/*.spec.ts\" --noStackTrace --runInBand",` in package.json (I did not do this because of point -670 Changes in tests)
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/FreSemin/nodejs2024Q1-service
 ```
 
 ## Installing NPM modules
@@ -18,6 +18,8 @@ npm install
 ```
 
 ## Running application
+
+Create `.env` from `.env.example` in the root folder
 
 ```
 npm start
