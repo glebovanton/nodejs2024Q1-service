@@ -11,6 +11,21 @@
 git clone https://github.com/FreSemin/nodejs2024Q1-service
 ```
 
+## Rename from .env.example to .env file
+
+## Docker-compose
+
+```
+docker compose up --build
+```
+
+## Docker check for vulnerabilities
+
+```
+npm run docker-audit:api
+npm run docker-audit:db
+```
+
 ## Installing NPM modules
 
 ```
