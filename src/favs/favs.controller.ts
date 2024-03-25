@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { Entity, Fav } from './entities/fav.entity';
 import { FavsService } from './favs.service';
-import { capitalizeFirstLetter } from '../helpers';
 
 @Controller('favs')
 export class FavsController {
@@ -19,19 +18,17 @@ export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
-  findAll(): Fav {
+  findAll(){
     return this.favsService.findAll();
   }
 
   @Post(':entity/:id')
-  add(
+  async add(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ): string {
+  ): Promise<void> {
     if (this.entities.includes(entity)) {
-      this.favsService.add(this.convertToPlural(entity), id);
-
-      return `${capitalizeFirstLetter(entity)} successfully added to favorites`;
+      return this.favsService.add(entity as Entity, id);
     } else {
       throw new BadRequestException('Invalid entity');
     }
@@ -39,22 +36,14 @@ export class FavsController {
 
   @Delete(':entity/:id')
   @HttpCode(204)
-  delete(
+  async delete(
     @Param('entity') entity: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ): string {
+  ): Promise<void> {
     if (this.entities.includes(entity)) {
-      this.favsService.delete(this.convertToPlural(entity), id);
-
-      return `${capitalizeFirstLetter(
-        entity,
-      )} successfully deleted from favorites`;
+      return await this.favsService.delete(entity as Entity, id);
     } else {
       throw new BadRequestException('Invalid entity');
     }
-  }
-
-  private convertToPlural(entityName: string): Entity {
-    return `${entityName}s` as Entity;
   }
 }
