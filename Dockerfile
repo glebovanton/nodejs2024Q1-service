@@ -1,4 +1,13 @@
-FROM ubuntu:latest
-LABEL authors="antonglebov"
+FROM node:20.11.1-alpine
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /usr/src/app
+
+COPY . .
+
+COPY package*.json .
+
+RUN npm install
+
+CMD npx prisma generate && npx prisma migrate deploy && npm run start:dev
+
+LABEL authors="antonglebov"
